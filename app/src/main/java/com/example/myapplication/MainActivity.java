@@ -25,4 +25,9 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
 }
