@@ -15,4 +15,14 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }
