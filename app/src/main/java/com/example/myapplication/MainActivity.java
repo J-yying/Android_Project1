@@ -22,6 +22,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private PictureLoad load ;
     private ArrayList<Sister> data;
     private SisterApi sisterApi;
+    private SisterTask sisterTask;
 
 
     @Override
@@ -32,7 +33,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         sisterApi = new SisterApi();
         initDate();
         initUI();
-
     }
 
     private void initDate() {
@@ -49,13 +49,55 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //        urls.add("https://ww2.sinaimg.cn/large/c85e4a5cgw1f62hzfvzwwj20hs0qogpo.jpg");
 
         data = new ArrayList<>();
-        new SisterTask(page).execute();
+//        new SisterTask(page).execute();
     }
     private void  initUI(){
         img1 = (ImageView)findViewById(R.id.imageView);
         bt1 = (Button) findViewById(R.id.button);
 
         bt1.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button:
+                if(data!=null && !data.isEmpty()){
+                    if(curpos >= 9){
+                        curpos = 0;
+                    }
+                    Log.d("guokejian", "onClick: " + data.get(curpos).getCoverImageUrl());
+                    load.load(img1,data.get(curpos).getCoverImageUrl());
+                    curpos++;
+             }
+            break;
+        }
+    }
+
+    private class SisterTask extends AsyncTask<Void,Void,ArrayList<Sister>> {
+
+        public SisterTask() {
+        }
+
+        @Override
+        protected ArrayList<Sister> doInBackground(Void... voids) {
+            return sisterApi.fetchSister();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Sister> sisters) {
+            super.onPostExecute(sisters);
+            data.clear();
+            Log.d("guokejian", "onPostExecute: "+sisters.isEmpty());
+            data.addAll(sisters);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            sisterTask = null;
+        }
     }
 
     @Override
@@ -76,43 +118,5 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onRestart() {
         super.onRestart();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.button:
-                if(data!=null && !data.isEmpty()){
-                    if(curpos >= 9){
-                        curpos = 0;
-                    }
-                    Log.d("guokejian", "onClick: " + data.get(curpos).getCoverImageUrl() +"1");
-                    load.load(img1,data.get(curpos).getCoverImageUrl());
-                    curpos++;
-             }
-            break;
-        }
-    }
-
-    private class SisterTask extends AsyncTask<Void,Void,ArrayList<Sister>> {
-
-        private int page;
-
-        public SisterTask(int page) {
-            this.page = page;
-        }
-
-        @Override
-        protected ArrayList<Sister> doInBackground(Void... voids) {
-            return sisterApi.fetchSister();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Sister> sisters) {
-            super.onPostExecute(sisters);
-            data.clear();
-            Log.d("guokejian", "onPostExecute: "+sisters.isEmpty());
-            data.addAll(sisters);
-        }
     }
 }
